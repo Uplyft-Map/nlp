@@ -10,17 +10,46 @@ def sentiment_analysis(document, endpoint=endpoint, key=key):
     response = single_analyze_sentiment(endpoint=endpoint, credential=key, input_text=document)
     pos, neg = response.document_scores.positive, response.document_scores.negative
     # print("yay")
-    return (neg - pos) * 4
+    return (pos - neg + 1)/2*31
         # print("oops")
         # return None
 
-def main(list_documents):
+def cool(list_documents):
+    gradient = ["FF0000","FF1000","FF2000","FF3000","FF4000","FF5000","FF6000","FF7000","FF8000",
+                "FF9000",
+                "FFA000",
+                "FFB000",
+                "FFC000",
+                "FFD000",
+                "FFE000",
+                "FFF000",
+                "FFFF00",
+                "F0FF00",
+                "E0FF00",
+                "D0FF00",
+                "C0FF00",
+                "B0FF00",
+                "A0FF00",
+                "90FF00",
+                "80FF00",
+                "70FF00",
+                "60FF00",
+                "50FF00",
+                "40FF00",
+                "30FF00",
+                "20FF00",
+                "10FF00"]
     returnvalue = []
     for i in list_documents:
         value = sentiment_analysis(i)
-        if (value >= 0):
-            returnvalue.append(True)
-        else:
-            returnvalue.append(False)
+        returnvalue.append(gradient[int(value)])
     return returnvalue
+
+
+
+
+
+test = ["hello","good","bad","mouth","fetus"]
+print(cool(test))
+
 
