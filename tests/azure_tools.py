@@ -25,12 +25,12 @@ def analyze_sentiment_google(text):
     print(sentiment.document_sentiment.score, sentiment.document_sentiment.magnitude)
 
 # Phrase Extraction
-def key_phrase_extraction_example(document, endpoint=endpoint, key=key):
+def key_phrase_extraction(document, endpoint=endpoint, key=key):
 
     try:
         document = document
 
-        response = single_extract_key_phrases(endpoint=endpoint, credential=key, input_text= document)
+        response = single_extract_key_phrases(endpoint=endpoint, credential=key, input_text=document)
 
         if not response.is_error:
             print("Key Phrases:")
@@ -48,7 +48,9 @@ with open(f, 'rb') as conf:
     confs = confs[1:]
     for confession in confs[30:40]:
         print(confession)
-        pos, neu, neg = sentiment_analysis_example(confession)
+        pos, neu, neg = sentiment_analysis(confession)
         depIndex = expit((neg - pos) * 4)
         print(depIndex)
+
+        key_phrase_extraction(confession)
         print("\n")
