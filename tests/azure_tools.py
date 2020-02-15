@@ -1,11 +1,12 @@
 from azure.ai.textanalytics import single_analyze_sentiment, single_extract_key_phrases
+from scipy.special import expit
+import pickle
 
 key = "24f1f63604d14d16b34aa2849540e6b3"
 endpoint = "https://uplyft.cognitiveservices.azure.com/"
 
-# Text Sentiment Analysis
-def sentiment_analysis_example(document, endpoint=endpoint, key=key):
-
+# Text Sentiment Analysis using Microsoft Azure
+def sentiment_analysis(document, endpoint=endpoint, key=key):
     response = single_analyze_sentiment(endpoint=endpoint, credential=key, input_text=document)
     print("Document Sentiment: {}".format(response.sentiment))
     print("Overall scores: positive={0:.3f}; neutral={1:.3f}; negative={2:.3f} \n".format(
@@ -13,19 +14,15 @@ def sentiment_analysis_example(document, endpoint=endpoint, key=key):
         response.document_scores.neutral,
         response.document_scores.negative,
     ))
-    for idx, sentence in enumerate(response.sentences):
-        print("[Offset: {}, Length: {}]".format(sentence.offset, sentence.length))
-        print("Sentence {} sentiment: {}".format(idx+1, sentence.sentiment))
-        print("Sentence score:\nPositive={0:.3f}\nNeutral={1:.3f}\nNegative={2:.3f}\n".format(
-            sentence.sentence_scores.positive,
-            sentence.sentence_scores.neutral,
-            sentence.sentence_scores.negative,
-        ))
+    
+    return response.document_scores.positive, response.document_scores.neutral, response.document_scores.negative
 
-document = "I had the best day of my life. I wish you were there with me."
-
-sentiment_analysis_example(document)
-
+# Analyze sentiment using Google Cloud tools
+def analyze_sentiment_google(text):
+    client = language.LanguageServiceClient()
+    document = types.Document(content=text, type=enums.Document.Type.PLAIN_TEXT)
+    sentiment = client.analyze_sentiment(document=document)
+    print(sentiment.document_sentiment.score, sentiment.document_sentiment.magnitude)
 
 # Phrase Extraction
 def key_phrase_extraction_example(document, endpoint=endpoint, key=key):
@@ -44,5 +41,14 @@ def key_phrase_extraction_example(document, endpoint=endpoint, key=key):
 
     except Exception as err:
         print("Encountered exception. {}".format(err))
-        
-key_phrase_extraction_example("My cat might need to see a veterinarian.")
+
+f = "cmu_confessions.pickle"
+with open(f, 'rb') as conf:
+    confs = pickle.load(conf)
+    confs = confs[1:]
+    for confession in confs[30:40]:
+        print(confession)
+        pos, neu, neg = sentiment_analysis_example(confession)
+        depIndex = expit((neg - pos) * 4)
+        print(depIndex)
+        print("\n")
